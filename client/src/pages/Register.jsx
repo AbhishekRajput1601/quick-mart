@@ -14,6 +14,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "USER", // Default role
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -30,46 +31,45 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async(e) => {
     e.preventDefault();
     
-    if(data.password !== data.confirmPassword){
-        toast.error("Password and Confirm Password must be same");
-        return;
-    }
+  if(data.password !== data.confirmPassword){
+    toast.error("Password and Confirm Password must be same");
+    return;
+  }
 
-    try {
-        const response = await Axios({
-            ...summaryApi.register,
-            data : data
-        });
+  try {
+    const response = await Axios({
+      ...summaryApi.register,
+      data : data
+    });
         
-        if(response.data.error){
-            toast.error(response.data.message);
-        }
-
-        if(response.data.success){
-        toast.success("User registered successfully");
-        setData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-          navigate("/login");
-        }
-
-    } catch (error) {
-        AxiosToastError(error);
+    if(response.data.error){
+      toast.error(response.data.message);
     }
+
+    if(response.data.success){
+    toast.success("User registered successfully");
+    setData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "USER",
+      });
+      navigate("/login");
+    }
+
+  } catch (error) {
+    AxiosToastError(error);
+  }
 
 };
 
@@ -150,6 +150,20 @@ const Register = () => {
                 {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
               </div>
             </div>
+          </div>
+
+          <div className="grid gap-1">
+            <label htmlFor="role">Role :</label>
+            <select
+              id="role"
+              name="role"
+              className="bg-blue-50 p-2 border-blue-200 rounded outline-none focus-within:border-yellow-500 border-2"
+              value={data.role}
+              onChange={handleChange}
+            >
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+            </select>
           </div>
 
           <button disabled={!allFieldsAreFilled} className={` ${allFieldsAreFilled ? "bg-green-600 hover:bg-green-700" : "bg-yellow-400" } text-white py-2 rounded cursor-pointer font-semibold my-3 tracking-wide`}>

@@ -133,10 +133,12 @@ const GlobalProvider = ({children}) => {
     }
 
     useEffect(()=>{
-      fetchCartItem()
-      handleLogoutOut()
-      fetchAddress()
-      fetchOrder()
+      const accessToken = localStorage.getItem("accesstoken") || localStorage.getItem("AccessToken");
+      if (user && accessToken) {
+        fetchCartItem();
+        fetchAddress();
+        fetchOrder();
+      }
     },[user])
     
     return(
