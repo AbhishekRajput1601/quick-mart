@@ -49,7 +49,7 @@ const Allusers = () => {
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : userRole !== "ADMIN" ? (
-        <div className="text-center text-red-500">Unauthorized access</div>
+        <div className="text-center text-red-500"></div>
       ) : allUsers.length === 0 ? (
         <div className="text-center text-gray-500">No users found.</div>
       ) : (

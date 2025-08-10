@@ -14,9 +14,9 @@ dotenv.config();
 
 export const registerUserController = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !role) {
             return res.status(400).json({ 
                 message: 'Please Fill All Fields',
                 error : true,
@@ -33,15 +33,14 @@ export const registerUserController = async (req, res) => {
             });
         }
 
-        const salt = await bcrypt.genSalt(10); 
-//Salt is a random value added to the password before hashing to make it more secure. 10 is the number of rounds to generate the salt, higher the number more secure it is but also more time consuming.
-
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const payload = {
             name,
             email,
-            password : hashedPassword
+            password : hashedPassword,
+            role
         }
 
         const user = await UserModel.create(payload);
@@ -56,14 +55,6 @@ export const registerUserController = async (req, res) => {
                 url: verifyEmailUrl
             })
         );
-
-        if (!verificationEmail) {
-            return res.status(500).json({ 
-                message: 'Error sending verification email',
-                error : true,
-                success : false
-            });
-        }
 
         return res.status(200).json({   
             message : "User created successfully, Please verify your email",
@@ -123,7 +114,7 @@ export const loginUserController = async (req, res) => {
 
         if (!email || !password) {
             return res.status(400).json({ 
-                message: 'Please fill all fields',
+                message: 'Please Fill All Fields',
                 error : true,
                 success : false
             });
@@ -165,9 +156,9 @@ export const loginUserController = async (req, res) => {
         );
 
         const cookieOptions = {
-            httpOnly: true, // This means the cookie cannot be accessed via JavaScript from the browser
-            sameSite: 'None', // This allows the cookie to be sent with cross-site requests 
-            secure: true // This means the cookie will only be sent over HTTPS connections
+            httpOnly: true, // Prevents client-side JS from accessing the cookie
+            sameSite: 'None', // Allows cross-site cookie sharing
+            secure: true // Ensures the cookie is sent over HTTPS
         }
 
         res.cookie('accessToken', accessToken, cookieOptions);
@@ -272,7 +263,7 @@ export const uploadAvatarController = async (req, res) => {
 
        const upload = await uploadImageClodinary(image);
 
-        const user = await UserModel.findByIdAndUpdate(userId, { avatar: upload.url });
+    const user = await UserModel.findByIdAndUpdate(userId, { avatar: upload.url });
 
         return res.status(200).json({
             message: 'Avatar uploaded successfully',
@@ -283,7 +274,7 @@ export const uploadAvatarController = async (req, res) => {
                 avatar : upload.url
             }
         }); 
-   
+
     } catch (error) {
         res.status(500).json({
              message: error.message || error, 
@@ -320,6 +311,7 @@ export const updateUserDetailsController = async (req, res) => {
             data : updateUser
         })
 
+
     } catch (error) {
         console.log("error in updateUserDetailsController") ;
         return res.status(500).json({
@@ -351,7 +343,8 @@ export const forgotPasswordController = async (req, res) => {
             forgot_password_otp : otp,
             forgot_password_expiry : new Date(expireTime).toISOString()
         })
-         
+         console.log(updatedUser);
+
         const forgetpassEmail = await sendEmail(
             email,
             "OTP for forget password of QuickMart",
@@ -441,7 +434,8 @@ export const verifyForgotPasswordOtpController = async (req, res) => {
 }
 
 export const resetPasswordController = async (req, res) => {
-    try {     
+    try {
+              
             const { email, newPassword, confirmPassword } = req.body;
             if (!email || !newPassword || !confirmPassword) {
                 return res.status(400).json({ 
@@ -493,7 +487,7 @@ export const resetPasswordController = async (req, res) => {
 export const refreshTokenController = async (req, res) => {
     try {
 
-const refreshToken = req.cookies.refreshToken || req.header?.authorization?.split(" ")[1];
+    const refreshToken = req.cookies.refreshToken || req.header?.authorization?.split(" ")[1];
 
           console.log(refreshToken);
 
