@@ -64,7 +64,7 @@ const AddToCartButton = ({ data }) => {
        const response = await  updateCartItem(cartItemDetails?._id,qty+1)
         
        if(response.success){
-        toast.success("Item added")
+        toast.success("Item added successfully")
        }
     }
 
@@ -77,7 +77,7 @@ const AddToCartButton = ({ data }) => {
             const response = await updateCartItem(cartItemDetails?._id,qty-1)
 
             if(response.success){
-                toast.success("Item remove")
+                toast.success("Item removed successfully")
             }
         }
     }

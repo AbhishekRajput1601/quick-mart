@@ -278,10 +278,10 @@ export const searchProduct = async (request, response) => {
   try {
     let { search, page, limit } = request.body;
 
-    if (!page) {
+    if (!page) { // If no page is provided, default to 1
       page = 1;
     }
-    if (!limit) {
+    if (!limit) { // If no limit is provided, default to 10 
       limit = 10;
     }
 
@@ -293,7 +293,7 @@ export const searchProduct = async (request, response) => {
         }
       : {};
 
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit; // Calculate the number of documents to skip for pagination for the current page 
 
     const [data, dataCount] = await Promise.all([
       ProductModel.find(query)
