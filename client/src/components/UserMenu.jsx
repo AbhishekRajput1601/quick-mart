@@ -103,7 +103,7 @@ const UserMenu = ({ close }) => {
           to={"/dashboard/myorders"}
           className="px-2 p-1 hover:bg-yellow-200"
         >
-          My Orders
+          User Orders
         </Link>
         <Link
           onClick={handleClose}

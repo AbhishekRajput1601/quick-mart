@@ -293,7 +293,7 @@ export const searchProduct = async (request, response) => {
         }
       : {};
 
-    const skip = (page - 1) * limit; // Calculate the number of documents to skip for pagination for the current page 
+    const skip = (page - 1) * limit; 
 
     const [data, dataCount] = await Promise.all([
       ProductModel.find(query)
