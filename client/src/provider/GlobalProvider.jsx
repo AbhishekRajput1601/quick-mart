@@ -19,7 +19,8 @@ const GlobalProvider = ({children}) => {
     const [notDiscountTotalPrice,setNotDiscountTotalPrice] = useState(0)
     const [totalQty,setTotalQty] = useState(0)
     const cartItem = useSelector(state => state.cartItem.cart)
-    const user = useSelector(state => state?.user)
+  const user = useSelector(state => state?.user)
+  const [hasFetched, setHasFetched] = useState(false)
 
     const fetchCartItem = async()=>{
         try {
@@ -132,14 +133,21 @@ const GlobalProvider = ({children}) => {
       }
     }
 
-    useEffect(()=>{
+    // Only fetch after user login, not on initial render
+    useEffect(() => {
       const accessToken = localStorage.getItem("accesstoken") || localStorage.getItem("AccessToken");
-      if (user && accessToken) {
+      // user must have _id (or adjust to your user object structure)
+      if (user && user._id && accessToken && !hasFetched) {
         fetchCartItem();
         fetchAddress();
         fetchOrder();
+        setHasFetched(true);
       }
-    },[user])
+      // Reset hasFetched if user logs out
+      if ((!user || !user._id || !accessToken) && hasFetched) {
+        setHasFetched(false);
+      }
+    }, [user, hasFetched]);
     
     return(
         <GlobalContext.Provider value={{
