@@ -14,17 +14,16 @@ import AxiosError from "../utils/AxiosToastError";
 const Allusers = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const accessToken = localStorage.getItem("accesstoken");
-  const userRole = localStorage.getItem("role");
+  const accessToken = localStorage.getItem("AccessToken");
 
   const fetchAllUsers = async () => {
     try {
       const responseData = await Axios({
         ...summaryApi.allUsers,
+        withCredentials: true,
       });
-      console.log("responseData", responseData);
+
       if (responseData.data.success) {
-        console.log("responseData fetched");
         setAllUsers(responseData.data.data);
         toast.success(responseData.data.message);
       }
@@ -32,24 +31,25 @@ const Allusers = () => {
       console.log("error in fetch all users", error);
       toast.error("Something went wrong while fetching all users");
       AxiosError(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (accessToken && userRole === "ADMIN") {
+    if (accessToken) {
       fetchAllUsers();
     } else {
       setLoading(false);
     }
-  }, [accessToken, userRole]);
+  }, [accessToken]);
 
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">All Users</h1>
+
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>
-      ) : userRole !== "ADMIN" ? (
-        <div className="text-center text-red-500"></div>
       ) : allUsers.length === 0 ? (
         <div className="text-center text-gray-500">No users found.</div>
       ) : (
@@ -62,10 +62,12 @@ const Allusers = () => {
               <div className="flex flex-col gap-2 mb-3">
                 <h2 className="text-xl font-semibold">{user.name}</h2>
               </div>
+
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <FaEnvelope className="text-blue-500" />
                 <span>{user.email}</span>
               </div>
+
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <FaPhone className="text-green-500" />
                 <span>{user.mobile ? user.mobile : "N/A"}</span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { IoSearch } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { TypeAnimation } from 'react-type-animation';
@@ -12,6 +12,7 @@ const Search = () => {
     const [ isMobile ] = useMobile()
     const params = useLocation()
     const searchText = params.search.slice(3) // 3 is the length of "/q=xyz"
+    const debounceTimeout = useRef(null)
 
     useEffect(()=>{
         const isSearch = location.pathname === "/search"
@@ -23,10 +24,15 @@ const Search = () => {
         navigate("/search")
     }
 
-    const handleOnChange = (e)=>{
+    const handleOnChange = (e) => {
         const value = e.target.value
-        const url = `/search?q=${value}`
-        navigate(url)
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current)
+        }
+        debounceTimeout.current = setTimeout(() => {
+            const url = `/search?q=${value}`
+            navigate(url)
+        }, 300)
     }
 
   return (
@@ -36,8 +42,10 @@ const Search = () => {
         <div>
             {
                 (isMobile && isSearchPage ) ? (
-                    <Link to={"/"} className='flex justify-center items-center h-full 
-                    p-2 m-1 hover:border-amber-400 group-focus-within:text-yellow-200
+                    <Link to={"/"} className='flex justify-center items-center 
+                    h-full 
+                    p-2 m-1 hover:border-amber-400 
+                    group-focus-within:text-yellow-200
                      bg-white rounded-full shadow-md'>
                         <FaArrowLeft size={20}/>
                     </Link>
@@ -57,9 +65,8 @@ const Search = () => {
                      flex items-center'>
                         <TypeAnimation
                                 sequence={[     
-                       // Same substring at the start will only be typed out once, initially
                                     'Search "milk"',
-                                    1000, // wait 1s before replacing "Mice" with "Hamsters"
+                                    1000, 
                                     'Search "bread"',
                                     1000,
                                     'Search "sugar"',

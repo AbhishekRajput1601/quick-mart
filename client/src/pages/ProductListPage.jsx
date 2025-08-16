@@ -37,7 +37,6 @@ const ProductListPage = () => {
       });
 
       const { data: responseData } = response;
-      console.log(responseData);
 
       if (responseData.success) {
         if (responseData.page == 1) {

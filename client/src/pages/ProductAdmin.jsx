@@ -27,7 +27,6 @@ const ProductAdmin = () => {
       })
 
       const { data: responseData } = response
-      console.log("product data search", responseData)
 
       if (responseData.success) {
         setTotalPageCount(responseData.totalPage)
